@@ -423,7 +423,6 @@ function renderLesson() {
                     <button class="option-btn" onclick="selectAnswer(${i})">${opt}</button>
                 `).join('')}
             </div>
-            <button id="continue-btn" class="btn btn-primary btn-large" style="display:none;margin-top:20px;" onclick="nextQuestion()">Continue</button>
         `;
     } else if (lessonData.type === 'game') {
         startGame(lessonData);
@@ -431,44 +430,57 @@ function renderLesson() {
 }
 
 function selectAnswer(index) {
+    state.selectedOption = index;
+    const checkBtn = document.getElementById('check-btn');
+    if (checkBtn) {
+        checkBtn.style.display = 'block';
+        setTimeout(() => {
+            checkBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }, 100);
+    }
+}
+
+function checkAnswer() {
     const lessonData = lessons[state.currentLevel][state.currentLesson];
     const buttons = document.querySelectorAll('.option-btn');
     const feedbackContainer = document.getElementById('feedback-container');
     const continueBtn = document.getElementById('continue-btn');
+    const checkBtn = document.getElementById('check-btn');
+    const index = state.selectedOption;
     
-    // Disable all buttons after selection
+    if (!buttons.length || index === null) return;
+    
+    // Disable all buttons
     buttons.forEach(btn => btn.disabled = true);
+    if (checkBtn) checkBtn.style.display = 'none';
     
     if (index === lessonData.correct) {
-        // Correct!
         buttons[index].classList.add('correct');
-        feedbackContainer.style.display = 'block';
-        feedbackContainer.className = 'feedback-correct';
-        feedbackContainer.innerHTML = `
-            <strong>✅ Correct!</strong><br>
-            ${lessonData.explanation}
-        `;
+        if (feedbackContainer) {
+            feedbackContainer.style.display = 'block';
+            feedbackContainer.className = 'feedback-correct';
+            feedbackContainer.innerHTML = `<strong>✅ Correct!</strong><br>${lessonData.explanation}`;
+        }
         state.gems += 5;
         updateStats();
         saveState();
-        continueBtn.style.display = 'block';
+        if (continueBtn) continueBtn.style.display = 'block';
     } else {
-        // Incorrect
         buttons[index].classList.add('incorrect');
-        buttons[lessonData.correct].classList.add('correct');
+        if (lessonData.correct !== undefined && buttons[lessonData.correct]) {
+            buttons[lessonData.correct].classList.add('correct');
+        }
         
-        // Track missed question for review
         if (!state.inReviewMode && !state.missedQuestions.includes(state.currentLesson)) {
             state.missedQuestions.push(state.currentLesson);
         }
         
-        feedbackContainer.style.display = 'block';
-        feedbackContainer.className = 'feedback-incorrect';
-        feedbackContainer.innerHTML = `
-            <strong>❌ Not quite!</strong><br>
-            ${lessonData.explanation}
-        `;
-        continueBtn.style.display = 'block';
+        if (feedbackContainer) {
+            feedbackContainer.style.display = 'block';
+            feedbackContainer.className = 'feedback-incorrect';
+            feedbackContainer.innerHTML = `<strong>❌ Not quite!</strong><br>${lessonData.explanation}`;
+        }
+        if (continueBtn) continueBtn.style.display = 'block';
     }
 }
 

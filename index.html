@@ -109,8 +109,12 @@
                     <span class="hearts-display">❤️ <span id="lesson-hearts">5</span></span>
                 </div>
                 <div class="lesson-content" id="lesson-content">
-                    <div id="feedback-container" style="display:none; margin: 15px 0;"></div>
                     <!-- Dynamic lesson content goes here -->
+                </div>
+                <div class="lesson-footer">
+                    <div id="feedback-container" style="display:none; margin: 15px 0;"></div>
+                    <button id="check-btn" class="btn btn-primary btn-large" style="display:none;" onclick="checkAnswer()">Check</button>
+                    <button id="continue-btn" class="btn btn-primary btn-large" style="display:none;" onclick="nextQuestion()">Continue</button>
                 </div>
             </section>
 
