@@ -403,19 +403,26 @@ function checkAnswer() {
         continueBtn.style.display = 'block';
         updateStats();
     } else {
-        // Show explanation for wrong answer
-        const feedback = document.createElement('div');
-        feedback.className = 'feedback-panel incorrect';
-        feedback.innerHTML = `
-            <div>💪 Not quite!</div>
-            <div style="font-size: 0.9rem; margin-top: 10px;">${lesson.explanation}</div>
+        // Show explanation inline
+        const feedbackDiv = document.getElementById('feedback-container');
+        feedbackDiv.innerHTML = `
+            <div class="feedback-panel incorrect">
+                <div>💪 Not quite!</div>
+                <div style="font-size: 0.95rem; margin-top: 8px;"><strong>Explanation:</strong> ${lesson.explanation}</div>
+            </div>
         `;
-        document.body.appendChild(feedback);
+        feedbackDiv.style.display = 'block';
+        
+        // Track missed questions
+        if (!state.missedQuestions) state.missedQuestions = [];
+        if (!state.missedQuestions.includes(state.currentLesson)) {
+            state.missedQuestions.push(state.currentLesson);
+        }
         
         state.hearts--;
         document.getElementById('lesson-hearts').textContent = state.hearts;
         updateStats();
-        
+
         if (state.hearts <= 0) {
             setTimeout(() => {
                 alert('Out of hearts! Try again later. ❤️');
