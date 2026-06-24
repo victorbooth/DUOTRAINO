@@ -1,4 +1,4 @@
-// GitLingo - Interactive GitHub Learning App
+// DUOTRAINO - Interactive Git & GitHub Learning App
 
 // State management
 let state = {
