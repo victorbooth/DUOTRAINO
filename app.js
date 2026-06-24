@@ -403,7 +403,15 @@ function checkAnswer() {
         continueBtn.style.display = 'block';
         updateStats();
     } else {
-        showFeedback(false, 'Not quite! Review the explanation below.');
+        // Show explanation for wrong answer
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback-panel incorrect';
+        feedback.innerHTML = `
+            <div>💪 Not quite!</div>
+            <div style="font-size: 0.9rem; margin-top: 10px;">${lesson.explanation}</div>
+        `;
+        document.body.appendChild(feedback);
+        
         state.hearts--;
         document.getElementById('lesson-hearts').textContent = state.hearts;
         updateStats();
