@@ -423,6 +423,11 @@ function renderLesson() {
                     <button class="option-btn" onclick="selectAnswer(${i})">${opt}</button>
                 `).join('')}
             </div>
+            <div id="feedback-container" style="display:none;margin-top:20px;"></div>
+            <div style="margin-top:20px;">
+                <button id="check-btn" class="btn btn-primary btn-large" style="display:none;" onclick="checkAnswer()">Check</button>
+                <button id="continue-btn" class="btn btn-primary btn-large" style="display:none;" onclick="nextQuestion()">Continue</button>
+            </div>
         `;
     } else if (lessonData.type === 'game') {
         startGame(lessonData);
