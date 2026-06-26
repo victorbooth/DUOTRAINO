@@ -773,18 +773,24 @@ body {
 .check-btn {
     width: 100%;
     max-width: 400px;
-    margin: 30px auto 0;
-    display: block;
+    margin: 30px auto 0 !important;
+    display: block !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    position: relative !important;
 }
 
 .continue-btn {
     width: 100%;
     max-width: 400px;
-    margin: 30px auto 0;
+    margin: 30px auto 0 !important;
     background: linear-gradient(135deg, #1cb0f6 0%, #0d8ecf 100%);
     color: white;
     box-shadow: 0 4px 0 #096fa3;
-    display: none;
+    display: none !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    position: relative !important;
 }
 
 /* Remove hearts display */
