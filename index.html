@@ -3,175 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DUOTRAINO - Learn Git & GitHub</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>DUOTRAINO - Learn Git</title>
+    <link rel="stylesheet" href="styles.css?v=3">
 </head>
 <body>
-    <div class="app-container">
+    <div id="app">
         <!-- Profile Selection Screen -->
-        <section id="profile-select-screen" class="screen active">
-            <div class="welcome-content">
-                <div class="mascot-large">🤖</div>
-                <h2>Welcome to DUOTRAINO!</h2>
-                <p>Select or create your profile to start learning Git & GitHub!</p>
-                <div id="profile-list" style="width: 100%; max-width: 400px; margin: 20px 0;"></div>
-                <button class="btn btn-primary btn-large" onclick="showCreateProfile()">+ New Profile</button>
+        <div id="profile-screen" class="screen active">
+            <div class="logo-header">
+                <h1>🤖 DUOTRAINO</h1>
+                <p>Learn Git the fun way!</p>
             </div>
-        </section>
-
-        <!-- Create Profile Screen -->
-        <section id="create-profile-screen" class="screen">
-            <div class="welcome-content">
-                <h2>Create New Profile</h2>
-                <input type="text" id="new-profile-name" placeholder="Enter your name" style="padding: 15px; font-size: 18px; border: 2px solid #3737d1; border-radius: 12px; width: 100%; max-width: 300px; margin: 20px 0;">
-                <button class="btn btn-primary btn-large" onclick="createProfile()">Create Profile</button>
-                <button class="btn btn-secondary" onclick="showProfileSelect()">Back</button>
+            <div class="profile-container">
+                <h2>Select Your Profile</h2>
+                <div id="profile-list" class="profile-list"></div>
+                <button id="new-profile-btn" class="btn-primary">+ New Profile</button>
             </div>
-        </section>
+        </div>
 
-        <!-- Header -->
-        <header class="header" style="display:none;">
-            <div class="logo">
-                <span class="mascot-small">🤖</span>
-                <h1>DUOTRAINO</h1>
+        <!-- Home/Level Map Screen -->
+        <div id="home-screen" class="screen">
+            <header class="main-header">
+                <div class="header-left">
+                    <span class="logo">🤖 DUOTRAINO</span>
+                </div>
+                <div class="header-stats">
+                    <span class="stat gems">💎 <span id="gem-count">0</span></span>
+                </div>
+            </header>
+            
+            <main class="level-map">
+                <div id="levels-container"></div>
+            </main>
+            
+            <nav class="bottom-nav">
+                <button class="nav-item active" data-screen="home">🏠 Home</button>
+                <button class="nav-item" data-screen="profile">👤 Profile</button>
+            </nav>
+        </div>
+
+        <!-- Lesson Screen -->
+        <div id="lesson-screen" class="screen">
+            <header class="lesson-header">
+                <button id="close-lesson" class="close-btn">✕</button>
+                <div class="progress-bar">
+                    <div id="progress-fill"></div>
+                </div>
+                <div class="lesson-stats">
+                    <span>💎 <span id="lesson-gems">0</span></span>
+                </div>
+            </header>
+            
+            <main class="lesson-content">
+                <div id="question-container"></div>
+                
+                <!-- Inline Feedback Area -->
+                <div id="feedback-area" class="feedback-area hidden"></div>
+                
+                <!-- Action Buttons Footer -->
+                <footer class="quiz-footer">
+                    <button id="check-btn" class="btn-check hidden">Check</button>
+                    <button id="continue-btn" class="btn-continue hidden">Continue</button>
+                </footer>
+            </main>
+        </div>
+
+        <!-- Level Complete Screen -->
+        <div id="complete-screen" class="screen">
+            <div class="complete-content">
+                <div class="trophy">🏆</div>
+                <h2>Level Complete!</h2>
+                <p id="complete-message">Great job!</p>
+                <div class="rewards">
+                    <div class="reward-item">
+                        <span class="reward-icon">💎</span>
+                        <span id="gems-earned">0</span>
+                    </div>
+                </div>
+                <button id="next-level-btn" class="btn-primary">Continue</button>
+                <button id="home-from-complete" class="btn-secondary">Back to Map</button>
             </div>
-            <div class="stats">
-                <div class="stat">
-                    <span class="stat-icon">🔥</span>
-                    <span id="streak">0</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-icon">💎</span>
-                    <span id="gems">0</span>
-                </div>
-            </div>
-        </header>
-
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Learning Path -->
-            <section id="path-screen" class="screen">
-                <h2>Your Learning Path</h2>
-                <div class="path-container">
-                    <div class="path-level" data-level="1" onclick="selectLevel(1)">
-                        <div class="level-node beginner">
-                            <span>🌱</span>
-                        </div>
-                        <span class="level-name">Git Basics</span>
-                        <div class="stars"></div>
-                    </div>
-                    <div class="path-level" data-level="2" onclick="selectLevel(2)">
-                        <div class="level-node beginner locked">
-                            <span>📁</span>
-                        </div>
-                        <span class="level-name">Repositories</span>
-                        <div class="stars"></div>
-                    </div>
-                    <div class="path-level" data-level="3" onclick="selectLevel(3)">
-                        <div class="level-node intermediate locked">
-                            <span>🔄</span>
-                        </div>
-                        <span class="level-name">Branching</span>
-                        <div class="stars"></div>
-                    </div>
-                    <div class="path-level" data-level="4" onclick="selectLevel(4)">
-                        <div class="level-node intermediate locked">
-                            <span>🤝</span>
-                        </div>
-                        <span class="level-name">Merging</span>
-                        <div class="stars"></div>
-                    </div>
-                    <div class="path-level" data-level="5" onclick="selectLevel(5)">
-                        <div class="level-node advanced locked">
-                            <span>🚀</span>
-                        </div>
-                        <span class="level-name">Pull Requests</span>
-                        <div class="stars"></div>
-                    </div>
-                    <div class="path-level" data-level="6" onclick="selectLevel(6)">
-                        <div class="level-node advanced locked">
-                            <span>👥</span>
-                        </div>
-                        <span class="level-name">Collaboration</span>
-                        <div class="stars"></div>
-                    </div>
-                </div>
-                <button class="btn btn-secondary" onclick="showWelcome()">← Back</button>
-            </section>
-
-            <!-- Lesson Screen -->
-            <section id="lesson-screen" class="screen">
-                <div class="lesson-header">
-                    <button class="btn-back" onclick="showPath()">←</button>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="lesson-progress"></div>
-                    </div>
-                    <span class="hearts-display">❤️ <span id="lesson-hearts">5</span></span>
-                </div>
-                <div class="lesson-content" id="lesson-content">
-                    <!-- Dynamic lesson content goes here -->
-                </div>
-                <div class="lesson-footer">
-                    <div id="feedback-container" style="display:none; margin: 15px 0;"></div>
-                    <button id="check-btn" class="btn btn-primary btn-large" style="display:none;" onclick="checkAnswer()">Check</button>
-                    <button id="continue-btn" class="btn btn-primary btn-large" style="display:none;" onclick="nextQuestion()">Continue</button>
-                </div>
-            </section>
-
-            <!-- Game Screen -->
-            <section id="game-screen" class="screen">
-                <div class="game-header">
-                    <button class="btn-back" onclick="showPath()">✕</button>
-                    <h3 id="game-title">Mini Game</h3>
-                    <span>❤️ <span id="game-hearts">3</span></span>
-                </div>
-                <div class="game-content" id="game-content">
-                    <!-- Dynamic game content goes here -->
-                </div>
-            </section>
-
-            <!-- Completion Screen -->
-            <section id="completion-screen" class="screen">
-                <div class="completion-content">
-                    <div class="mascot-celebration">🎉</div>
-                    <h2>Lesson Complete!</h2>
-                    <div class="rewards">
-                        <div class="reward">
-                            <span class="reward-icon">💎</span>
-                            <span id="gems-earned">+10</span>
-                        </div>
-                        <div class="reward">
-                            <span class="reward-icon">⭐</span>
-                            <span>3 Stars</span>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary btn-large" onclick="showPath()">Continue</button>
-                </div>
-            </section>
-
-            <!-- Profile Screen -->
-            <section id="profile-screen" class="screen">
-                <!-- Dynamic profile content rendered by JS -->
-            </section>
-        </main>
-
-        <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
-            <button class="nav-btn active" onclick="showWelcome()">
-                <span>🏠</span>
-                <span>Home</span>
-            </button>
-            <button class="nav-btn" onclick="showPath()">
-                <span>🗺️</span>
-                <span>Path</span>
-            </button>
-            <button class="nav-btn" onclick="showProfile()">
-                <span>👤</span>
-                <span>Profile</span>
-            </button>
-        </nav>
+        </div>
     </div>
 
-    <script src="app.js?v=2"></script>
+    <script src="app.js?v=3"></script>
 </body>
 </html>
