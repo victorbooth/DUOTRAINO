@@ -4,88 +4,816 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DUOTRAINO - Learn Git</title>
-    <link rel="stylesheet" href="styles.css?v=3">
+    <style>
+        :root {
+            --bg-color: #D4FF00; /* BRIGHT LIME GREEN */
+            --card-bg: #ffffff;
+            --primary: #58cc02;
+            --primary-dark: #46a302;
+            --text: #3c3c3c;
+            --gray: #e5e5e5;
+            --blue: #1cb0f6;
+            --red: #ff4b4b;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- Layout Containers --- */
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--card-bg);
+            min-height: 100vh;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .screen {
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            padding: 20px;
+            flex: 1;
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* --- Profile Screen --- */
+        #profile-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .mascot-large {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        .btn-new-profile {
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #1899d6;
+            transition: transform 0.1s;
+        }
+
+        .btn-new-profile:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* --- Map Screen --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 2px solid var(--gray);
+            margin-bottom: 20px;
+        }
+
+        .path-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            padding-bottom: 80px;
+        }
+
+        .level-node {
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 6px 0 var(--primary-dark);
+            position: relative;
+            z-index: 2;
+        }
+
+        .level-node.locked {
+            background: var(--gray);
+            box-shadow: 0 6px 0 #cfcfcf;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .path-line {
+            width: 4px;
+            height: 30px;
+            background: var(--gray);
+            margin-top: -15px;
+            margin-bottom: -15px;
+            z-index: 1;
+        }
+
+        /* --- Lesson Screen --- */
+        .lesson-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 16px;
+            background: var(--gray);
+            border-radius: 8px;
+            margin: 0 15px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
+
+        .question-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .question-text {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* Multiple Choice Styles */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .option-card {
+            border: 2px solid var(--gray);
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: bold;
+            transition: all 0.2s;
+            box-shadow: 0 4px 0 var(--gray);
+        }
+
+        .option-card:hover {
+            background: #f7f7f7;
+        }
+
+        .option-card.selected {
+            border-color: var(--blue);
+            background: #ddf4ff;
+            box-shadow: 0 4px 0 #1899d6;
+            color: var(--blue);
+        }
+
+        .option-card.correct {
+            border-color: var(--primary);
+            background: #dfffd6;
+            box-shadow: 0 4px 0 var(--primary-dark);
+            color: var(--primary-dark);
+        }
+
+        .option-card.wrong {
+            border-color: var(--red);
+            background: #ffdfe0;
+            box-shadow: 0 4px 0 #ea2b2b;
+            color: #ea2b2b;
+        }
+
+        /* Match Game Styles */
+        .match-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        .match-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 48%;
+        }
+        .match-item {
+            background: white;
+            border: 2px solid var(--gray);
+            border-radius: 12px;
+            padding: 15px 5px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 4px 0 var(--gray);
+            font-size: 14px;
+            user-select: none;
+        }
+        .match-item.selected {
+            border-color: var(--blue);
+            background: #ddf4ff;
+            box-shadow: 0 4px 0 #1899d6;
+        }
+        .match-item.matched {
+            visibility: hidden; /* Hide when matched */
+            pointer-events: none;
+        }
+
+        /* Order Game Styles */
+        .order-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            min-height: 200px;
+        }
+        .order-item {
+            background: white;
+            border: 2px solid var(--gray);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: grab;
+            box-shadow: 0 4px 0 var(--gray);
+            text-align: center;
+            font-weight: bold;
+        }
+        .order-item:active {
+            cursor: grabbing;
+        }
+
+        /* Feedback Area */
+        .feedback-area {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+        .feedback-area.correct {
+            background: #dfffd6;
+            color: var(--primary-dark);
+            display: block;
+        }
+        .feedback-area.wrong {
+            background: #ffdfe0;
+            color: #ea2b2b;
+            display: block;
+        }
+
+        /* Footer Actions */
+        .footer-actions {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 2px solid var(--gray);
+            display: flex;
+            justify-content: center; /* CENTERED BUTTONS */
+            width: 100%;
+        }
+
+        .btn-check, .btn-continue {
+            width: 150px;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+
+        .btn-check {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 0 var(--primary-dark);
+            display: none; /* Hidden until answer selected */
+        }
+        
+        .btn-check:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .btn-continue {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 0 var(--primary-dark);
+            display: none; /* Hidden until checked */
+        }
+
+        .btn-continue:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        /* Utility */
+        .hidden { display: none !important; }
+    </style>
 </head>
 <body>
-    <div id="app">
-        <!-- Profile Selection Screen -->
-        <div id="profile-screen" class="screen active">
-            <div class="logo-header">
-                <h1>🤖 DUOTRAINO</h1>
-                <p>Learn Git the fun way!</p>
-            </div>
-            <div class="profile-container">
-                <h2>Select Your Profile</h2>
-                <div id="profile-list" class="profile-list"></div>
-                <button id="new-profile-btn" class="btn-primary">+ New Profile</button>
-            </div>
-        </div>
 
-        <!-- Home/Level Map Screen -->
-        <div id="home-screen" class="screen">
-            <header class="main-header">
-                <div class="header-left">
-                    <span class="logo">🤖 DUOTRAINO</span>
-                </div>
-                <div class="header-stats">
-                    <span class="stat gems">💎 <span id="gem-count">0</span></span>
-                </div>
-            </header>
-            
-            <main class="level-map">
-                <div id="levels-container"></div>
-            </main>
-            
-            <nav class="bottom-nav">
-                <button class="nav-item active" data-screen="home">🏠 Home</button>
-                <button class="nav-item" data-screen="profile">👤 Profile</button>
-            </nav>
-        </div>
+<div class="app-container">
+    
+    <!-- PROFILE SCREEN -->
+    <div id="profile-screen" class="screen active">
+        <div class="mascot-large">🤖</div>
+        <h1>DUOTRAINO</h1>
+        <p>Select a profile to start learning Git!</p>
+        <div id="profile-list" style="margin: 20px 0; width: 100%;"></div>
+        <button class="btn-new-profile" onclick="createNewProfile()">+ New Profile</button>
+    </div>
 
-        <!-- Lesson Screen -->
-        <div id="lesson-screen" class="screen">
-            <header class="lesson-header">
-                <button id="close-lesson" class="close-btn">✕</button>
-                <div class="progress-bar">
-                    <div id="progress-fill"></div>
-                </div>
-                <div class="lesson-stats">
-                    <span>💎 <span id="lesson-gems">0</span></span>
-                </div>
-            </header>
-            
-            <main class="lesson-content">
-                <div id="question-container"></div>
-                
-                <!-- Inline Feedback Area -->
-                <div id="feedback-area" class="feedback-area hidden"></div>
-                
-                <!-- Action Buttons Footer -->
-                <footer class="quiz-footer">
-                    <button id="check-btn" class="btn-check hidden">Check</button>
-                    <button id="continue-btn" class="btn-continue hidden">Continue</button>
-                </footer>
-            </main>
+    <!-- MAP SCREEN -->
+    <div id="map-screen" class="screen">
+        <div class="header">
+            <div style="font-weight:bold; font-size: 20px;" onclick="showScreen('profile-screen')">👤 <span id="current-profile-name">User</span></div>
+            <div style="color: var(--blue); font-weight: bold;">💎 <span id="gem-count">0</span></div>
         </div>
-
-        <!-- Level Complete Screen -->
-        <div id="complete-screen" class="screen">
-            <div class="complete-content">
-                <div class="trophy">🏆</div>
-                <h2>Level Complete!</h2>
-                <p id="complete-message">Great job!</p>
-                <div class="rewards">
-                    <div class="reward-item">
-                        <span class="reward-icon">💎</span>
-                        <span id="gems-earned">0</span>
-                    </div>
-                </div>
-                <button id="next-level-btn" class="btn-primary">Continue</button>
-                <button id="home-from-complete" class="btn-secondary">Back to Map</button>
-            </div>
+        <div class="path-container" id="level-path">
+            <!-- Levels injected by JS -->
         </div>
     </div>
 
-    <script src="app.js?v=3"></script>
+    <!-- LESSON SCREEN -->
+    <div id="lesson-screen" class="screen">
+        <div class="lesson-header">
+            <span style="cursor:pointer" onclick="quitLesson()">✕</span>
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+            <span style="color: var(--red); font-weight: bold;">❤️ ∞</span>
+        </div>
+
+        <div class="question-area">
+            <div class="mascot-large" style="font-size: 50px; margin-bottom: 10px;">🤖</div>
+            <div id="question-text" class="question-text">Question goes here...</div>
+            
+            <!-- Dynamic Content Areas -->
+            <div id="multiple-choice-area" class="options-grid"></div>
+            <div id="match-area" class="match-container"></div>
+            <div id="order-area" class="order-container"></div>
+
+            <!-- Feedback -->
+            <div id="feedback-msg" class="feedback-area"></div>
+        </div>
+
+        <div class="footer-actions">
+            <button id="btn-check" class="btn-check" onclick="checkAnswer()">Check</button>
+            <button id="btn-continue" class="btn-continue" onclick="nextQuestion()">Continue</button>
+        </div>
+    </div>
+
+    <!-- LEVEL COMPLETE SCREEN -->
+    <div id="complete-screen" class="screen" style="text-align: center; justify-content: center;">
+        <div class="mascot-large">🎉</div>
+        <h1>Level Complete!</h1>
+        <p>You earned +10 Gems</p>
+        <button class="btn-continue" style="display:inline-block; margin-top:20px;" onclick="showScreen('map-screen')">Back to Map</button>
+    </div>
+
+</div>
+
+<script>
+    // --- DATA & STATE ---
+    let profiles = JSON.parse(localStorage.getItem('duotraino_profiles')) || [];
+    let currentProfile = null;
+    let currentLevelIndex = 0;
+    let currentQuestionIndex = 0;
+    let selectedOption = null;
+    let matchSelections = [];
+    let orderItems = [];
+    let mistakesQueue = []; // For review mode
+
+    const levels = [
+        {
+            title: "Git Basics",
+            questions: [
+                {
+                    type: "choice",
+                    text: "What is Git?",
+                    options: ["A video game", "A version control system", "A programming language"],
+                    correct: 1,
+                    explanation: "Git is a distributed version control system for tracking changes in source code."
+                },
+                {
+                    type: "match",
+                    text: "Match the Git commands to their descriptions",
+                    pairs: [
+                        { term: "git init", def: "Starts a new repository" },
+                        { term: "git add", def: "Stages changes for commit" },
+                        { term: "git commit", def: "Saves staged changes" }
+                    ]
+                },
+                {
+                    type: "order",
+                    text: "Put the basic Git workflow in order",
+                    items: ["Edit files", "git add", "git commit"],
+                    correctOrder: ["Edit files", "git add", "git commit"]
+                }
+            ]
+        },
+        {
+            title: "Branching Out",
+            questions: [
+                {
+                    type: "choice",
+                    text: "What is a Branch?",
+                    options: ["A tree part", "A parallel version of the code", "A mistake"],
+                    correct: 1,
+                    explanation: "A branch is a lightweight movable pointer to a commit, allowing you to work separately."
+                },
+                {
+                    type: "match",
+                    text: "Match Branch Commands",
+                    pairs: [
+                        { term: "git branch", def: "List branches" },
+                        { term: "git checkout", def: "Switch branches" },
+                        { term: "git merge", def: "Combine branches" }
+                    ]
+                }
+            ]
+        },
+        {
+            title: "Remote Control",
+            questions: [
+                {
+                    type: "choice",
+                    text: "What is 'origin'?",
+                    options: ["The start of the universe", "The default name for the remote server", "A git bug"],
+                    correct: 1,
+                    explanation: "'Origin' is the conventional name for the primary remote repository you cloned from."
+                }
+            ]
+        }
+    ];
+
+    // --- INITIALIZATION ---
+    function init() {
+        renderProfiles();
+        if(profiles.length === 0) {
+            showScreen('profile-screen');
+        } else {
+            // Auto login first user if exists, or stay on profile screen
+            // For now, let's stay on profile screen to select
+            showScreen('profile-screen');
+        }
+    }
+
+    // --- PROFILE SYSTEM ---
+    function renderProfiles() {
+        const list = document.getElementById('profile-list');
+        list.innerHTML = '';
+        profiles.forEach((p, index) => {
+            const btn = document.createElement('div');
+            btn.className = 'option-card';
+            btn.style.marginBottom = '10px';
+            btn.innerHTML = `<strong>${p.name}</strong><br>Gems: ${p.gems}`;
+            btn.onclick = () => loadProfile(index);
+            list.appendChild(btn);
+        });
+    }
+
+    function createNewProfile() {
+        const name = prompt("Enter your name:");
+        if (name) {
+            const newProfile = { name: name, gems: 0, completedLevels: [] };
+            profiles.push(newProfile);
+            saveProfiles();
+            renderProfiles();
+            loadProfile(profiles.length - 1);
+        }
+    }
+
+    function loadProfile(index) {
+        currentProfile = profiles[index];
+        document.getElementById('current-profile-name').innerText = currentProfile.name;
+        document.getElementById('gem-count').innerText = currentProfile.gems;
+        renderMap();
+        showScreen('map-screen');
+    }
+
+    function saveProfiles() {
+        localStorage.setItem('duotraino_profiles', JSON.stringify(profiles));
+    }
+
+    // --- NAVIGATION ---
+    function showScreen(id) {
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    function renderMap() {
+        const container = document.getElementById('level-path');
+        container.innerHTML = '';
+        
+        levels.forEach((lvl, idx) => {
+            const isLocked = idx > 0 && !levels[idx-1].completed; // Simple lock logic
+            const node = document.createElement('div');
+            node.className = `level-node ${isLocked ? 'locked' : ''}`;
+            node.innerHTML = isLocked ? '🔒' : '⭐';
+            node.onclick = () => { if(!isLocked) startLevel(idx); };
+            
+            container.appendChild(node);
+            
+            if (idx < levels.length - 1) {
+                const line = document.createElement('div');
+                line.className = 'path-line';
+                container.appendChild(line);
+            }
+        });
+    }
+
+    // --- GAME LOGIC ---
+    function startLevel(idx) {
+        currentLevelIndex = idx;
+        currentQuestionIndex = 0;
+        mistakesQueue = [];
+        showScreen('lesson-screen');
+        loadQuestion();
+    }
+
+    function loadQuestion() {
+        const level = levels[currentLevelIndex];
+        // If we ran out of questions but have mistakes, load a mistake
+        if (currentQuestionIndex >= level.questions.length) {
+            if (mistakesQueue.length > 0) {
+                // Load a mistake question (simplified: just reload the first mistake for now)
+                // In a full app, we'd pick randomly from queue
+                alert("Review Time! Let's fix what you missed.");
+                currentQuestionIndex = 0; // Restart loop for review (simple implementation)
+                // Ideally we filter level.questions to only show mistakes
+            } else {
+                finishLevel();
+                return;
+            }
+        }
+
+        const q = level.questions[currentQuestionIndex];
+        const progress = ((currentQuestionIndex) / level.questions.length) * 100;
+        document.getElementById('progress-fill').style.width = `${progress}%`;
+        
+        document.getElementById('question-text').innerText = q.text;
+        document.getElementById('feedback-msg').className = 'feedback-area';
+        document.getElementById('feedback-msg').style.display = 'none';
+        document.getElementById('btn-check').style.display = 'none';
+        document.getElementById('btn-continue').style.display = 'none';
+        selectedOption = null;
+
+        // Clear areas
+        document.getElementById('multiple-choice-area').innerHTML = '';
+        document.getElementById('match-area').innerHTML = '';
+        document.getElementById('order-area').innerHTML = '';
+
+        if (q.type === 'choice') renderChoice(q);
+        else if (q.type === 'match') renderMatch(q);
+        else if (q.type === 'order') renderOrder(q);
+    }
+
+    function renderChoice(q) {
+        const area = document.getElementById('multiple-choice-area');
+        q.options.forEach((opt, i) => {
+            const div = document.createElement('div');
+            div.className = 'option-card';
+            div.innerText = opt;
+            div.onclick = () => selectChoice(i, div);
+            area.appendChild(div);
+        });
+    }
+
+    function selectChoice(index, element) {
+        if(document.getElementById('btn-continue').style.display === 'block') return; // Prevent changing after check
+        
+        document.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedOption = index;
+        document.getElementById('btn-check').style.display = 'block';
+    }
+
+    function renderMatch(q) {
+        const area = document.getElementById('match-area');
+        const leftCol = document.createElement('div');
+        leftCol.className = 'match-column';
+        const rightCol = document.createElement('div');
+        rightCol.className = 'match-column';
+
+        // Shuffle for display
+        let terms = q.pairs.map((p, i) => ({ txt: p.term, id: i, type: 'term' }));
+        let defs = q.pairs.map((p, i) => ({ txt: p.def, id: i, type: 'def' }));
+        
+        // Simple shuffle
+        terms.sort(() => Math.random() - 0.5);
+        defs.sort(() => Math.random() - 0.5);
+
+        terms.forEach(t => {
+            const el = document.createElement('div');
+            el.className = 'match-item';
+            el.innerText = t.txt;
+            el.dataset.id = t.id;
+            el.dataset.type = 'term';
+            el.onclick = () => handleMatchClick(el);
+            leftCol.appendChild(el);
+        });
+
+        defs.forEach(d => {
+            const el = document.createElement('div');
+            el.className = 'match-item';
+            el.innerText = d.txt;
+            el.dataset.id = d.id;
+            el.dataset.type = 'def';
+            el.onclick = () => handleMatchClick(el);
+            rightCol.appendChild(el);
+        });
+
+        area.appendChild(leftCol);
+        area.appendChild(rightCol);
+    }
+
+    function handleMatchClick(el) {
+        if (el.classList.contains('matched')) return;
+        if (el.classList.contains('selected')) {
+            el.classList.remove('selected');
+            matchSelections = matchSelections.filter(i => i !== el);
+            return;
+        }
+
+        el.classList.add('selected');
+        matchSelections.push(el);
+
+        if (matchSelections.length === 2) {
+            const [first, second] = matchSelections;
+            if (first.dataset.type !== second.dataset.type) {
+                // Check match
+                if (first.dataset.id === second.dataset.id) {
+                    // Correct
+                    setTimeout(() => {
+                        first.classList.add('matched');
+                        second.classList.add('matched');
+                        first.classList.remove('selected');
+                        second.classList.remove('selected');
+                        checkMatchComplete();
+                    }, 500);
+                } else {
+                    // Wrong
+                    setTimeout(() => {
+                        first.classList.remove('selected');
+                        second.classList.remove('selected');
+                    }, 500);
+                }
+            } else {
+                // Same column selected
+                first.classList.remove('selected');
+                matchSelections.shift();
+            }
+            matchSelections = [];
+        }
+    }
+
+    function checkMatchComplete() {
+        const remaining = document.querySelectorAll('.match-item:not(.matched)');
+        if (remaining.length === 0) {
+            // All matched
+            selectedOption = true; // Fake success flag
+            document.getElementById('btn-check').style.display = 'block';
+            // Auto check for match games
+            checkAnswer(); 
+        }
+    }
+
+    function renderOrder(q) {
+        const area = document.getElementById('order-area');
+        orderItems = [...q.items];
+        // Shuffle
+        orderItems.sort(() => Math.random() - 0.5);
+        drawOrderList();
+    }
+
+    function drawOrderList() {
+        const area = document.getElementById('order-area');
+        area.innerHTML = '';
+        orderItems.forEach((item, idx) => {
+            const el = document.createElement('div');
+            el.className = 'order-item';
+            el.innerText = item;
+            el.draggable = true;
+            el.dataset.idx = idx;
+            
+            // Drag Events
+            el.addEventListener('dragstart', dragStart);
+            el.addEventListener('dragover', dragOver);
+            el.addEventListener('drop', drop);
+            // Touch events for mobile could be added here
+            
+            area.appendChild(el);
+        });
+        // Show check button immediately for ordering as interaction is direct
+        document.getElementById('btn-check').style.display = 'block';
+    }
+
+    let dragSrcIdx = null;
+    function dragStart(e) { dragSrcIdx = this.dataset.idx; }
+    function dragOver(e) { e.preventDefault(); }
+    function drop(e) {
+        e.preventDefault();
+        const dragDropIdx = this.dataset.idx;
+        if (dragSrcIdx !== dragDropIdx) {
+            // Swap
+            const temp = orderItems[dragSrcIdx];
+            orderItems[dragSrcIdx] = orderItems[dragDropIdx];
+            orderItems[dragDropIdx] = temp;
+            drawOrderList();
+        }
+    }
+
+    // --- CHECK & CONTINUE ---
+    function checkAnswer() {
+        const level = levels[currentLevelIndex];
+        const q = level.questions[currentQuestionIndex];
+        const feedback = document.getElementById('feedback-msg');
+        const btnCheck = document.getElementById('btn-check');
+        const btnCont = document.getElementById('btn-continue');
+        let isCorrect = false;
+
+        if (q.type === 'choice') {
+            if (selectedOption === q.correct) isCorrect = true;
+            // Visuals
+            const opts = document.querySelectorAll('.option-card');
+            opts[q.correct].classList.add('correct');
+            if (!isCorrect && selectedOption !== null) {
+                opts[selectedOption].classList.add('wrong');
+            }
+        } else if (q.type === 'match') {
+            isCorrect = true; // Already validated by game logic
+        } else if (q.type === 'order') {
+            if (JSON.stringify(orderItems) === JSON.stringify(q.correctOrder)) {
+                isCorrect = true;
+            }
+        }
+
+        if (isCorrect) {
+            feedback.innerHTML = "<strong>Correct!</strong>";
+            feedback.className = "feedback-area correct";
+            // Play sound effect here if desired
+        } else {
+            feedback.innerHTML = `<strong>Incorrect!</strong><br>${q.explanation || "Review the concept and try again."}`;
+            feedback.className = "feedback-area wrong";
+            mistakesQueue.push(currentQuestionIndex);
+        }
+
+        btnCheck.style.display = 'none';
+        btnCont.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        loadQuestion();
+    }
+
+    function finishLevel() {
+        currentProfile.gems += 10;
+        levels[currentLevelIndex].completed = true;
+        saveProfiles();
+        document.getElementById('gem-count').innerText = currentProfile.gems;
+        showScreen('complete-screen');
+    }
+
+    function quitLesson() {
+        showScreen('map-screen');
+    }
+
+    // Start
+    init();
+
+</script>
 </body>
 </html>
